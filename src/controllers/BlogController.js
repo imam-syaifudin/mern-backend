@@ -5,19 +5,25 @@ const storage = require('../utils/storage');
 
 exports.index = async (req, res, next) => {
 
-    try {
-        const data = await Blog.find({});
-        res.status(200).json({
-            message: 'Data berhasil diambil',
-            data: data,
-        })
-    } catch (error) {
-        res.status(422).json({
-            message: 'Data gagal diambil',
-            error: error,
-        })
-
+    const optionsPaginate = {
+        page: req.query.page,
+        limit: req.query.limit,
     }
+
+    Blog.paginate({}, optionsPaginate, function (error, data) {
+        if (error) {
+            res.status(422).json({
+                message: 'Data gagal diambil',
+                error: error,
+            })
+        } else {
+            res.status(200).json({
+                message: 'Data berhasil diambil',
+                data: data,
+            })
+        }
+    });
+
 
 }
 
@@ -52,8 +58,8 @@ exports.store = [
             });
         }),
     body('image').custom((value, { req, res }) => {
-        
-        if( !req.file ){
+
+        if (!req.file) {
             throw new Error('Harus ada gambar yang diupload');
         }
 
@@ -72,8 +78,8 @@ exports.store = [
         // Validation Check
         const errors = validationResult(req);
         if (!errors.isEmpty()) {
-            
-            if( req.file ){
+
+            if (req.file) {
                 await storage.remove(req.file.path);
             }
 
@@ -127,10 +133,10 @@ exports.update = [
         }),
     body('image').custom((value, { req, res }) => {
 
-        if( req.file ){
+        if (req.file) {
             const allowedExtensions = ['.jpg', '.jpeg', '.png'];
             const fileExtension = path.extname(req.file.originalname);
-    
+
             if (!allowedExtensions.includes(fileExtension.toLowerCase())) {
                 throw new Error('File must be a JPG, JPEG, or PNG');
             }
@@ -147,8 +153,8 @@ exports.update = [
         // Validation Check
         const errors = validationResult(req);
         if (!errors.isEmpty()) {
-            
-            if ( req.file ) {
+
+            if (req.file) {
                 await storage.remove(req.file.path);
             }
 
@@ -181,7 +187,7 @@ exports.update = [
             }
 
             // Update Query
-            Blog.findByIdAndUpdate(id, newBlog,{ new: true })
+            Blog.findByIdAndUpdate(id, newBlog, { new: true })
                 .then((result) => {
                     res.status(200).json({
                         message: 'Data berhasil diupdate',
@@ -205,10 +211,10 @@ exports.update = [
 
     }]
 
-exports.destroy = (req,res) => {
+exports.destroy = (req, res) => {
 
     const { id } = req.params;
-    
+
     try {
 
         Blog.findByIdAndDelete(id)
@@ -218,7 +224,7 @@ exports.destroy = (req,res) => {
                     message: 'Delete data success',
                 })
             })
-            .catch(error =>{
+            .catch(error => {
                 res.status(422).json({
                     message: 'Delete data error',
                     error: error
@@ -229,7 +235,7 @@ exports.destroy = (req,res) => {
         res.status(404).json({
             message: 'Data Not Found',
             error: error
-        })        
+        })
     }
 
 }

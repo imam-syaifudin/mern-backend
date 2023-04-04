@@ -1,5 +1,7 @@
 const mongoose = require('mongoose');
 const Schema = mongoose.Schema;
+const paginate = require('mongoose-paginate-v2');
+
 
 const Blog = Schema({
     title: {
@@ -25,5 +27,7 @@ const Blog = Schema({
         updatedAt: 'updated_at'
     }
 });
+
+Blog.plugin(paginate);
 
 module.exports = mongoose.model('blog', Blog);
