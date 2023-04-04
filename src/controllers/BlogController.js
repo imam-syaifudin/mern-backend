@@ -54,7 +54,7 @@ exports.store = [
     body('image').custom((value, { req, res }) => {
         
         if( !req.file ){
-            throw new Error('Harus ada gmabar yang diupload');
+            throw new Error('Harus ada gambar yang diupload');
         }
 
         const allowedExtensions = ['.jpg', '.jpeg', '.png'];
@@ -204,3 +204,32 @@ exports.update = [
 
 
     }]
+
+exports.destroy = (req,res) => {
+
+    const { id } = req.params;
+    
+    try {
+
+        Blog.findByIdAndDelete(id)
+            .then(result => {
+                storage.remove(result.image);
+                res.status(200).json({
+                    message: 'Delete data success',
+                })
+            })
+            .catch(error =>{
+                res.status(422).json({
+                    message: 'Delete data error',
+                    error: error
+                })
+            })
+
+    } catch (error) {
+        res.status(404).json({
+            message: 'Data Not Found',
+            error: error
+        })        
+    }
+
+}

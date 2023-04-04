@@ -9,6 +9,7 @@ router.get('/', BlogController.index);
 router.get('/:id', BlogController.show);
 router.post('/', upload.single('image') , BlogController.store);
 router.put('/:id', upload.single('image') , BlogController.update);
+router.delete('/:id',BlogController.destroy);
 
 
 module.exports = router;

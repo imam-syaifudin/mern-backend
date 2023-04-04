@@ -18,7 +18,7 @@ const check = (file, path) => {
                 // Create Folder
                 fs.mkdirSync(`./${path}`, { recursive: true });
 
-                // Moving File From Folder ./images
+                // Moving File From Folder $path
                 moveFile(file.path, `./${path}${file.filename}`)
                 resolve(`${path}${file.filename}`)
             } else {
